@@ -32,7 +32,26 @@ const App = () => {
     const isInPhonebook = persons.some((person) => person.name === newName);
 
     if (isInPhonebook) {
-      alert(`${newName} is already added to phonebook`);
+      const message = `${newName} is already added to phonebook, replace the old number with a new one?`;
+      const result = window.confirm(message);
+      if (result) {
+        const personToUpdate = persons.find(
+          (person) => person.name === newName
+        );
+        const updatedPerson = { ...personToUpdate, number: newNumber };
+
+        personService
+          .update(personToUpdate.id, updatedPerson)
+          .then((returnedPerson) => {
+            setPersons(
+              persons.map(
+                (person) => (person.name !== newName ? person : returnedPerson)
+              )
+            );
+            setNewName('');
+            setNewNumber('');
+          });
+      }
     } else {
       const newPerson = { name: newName, number: newNumber };
       personService.create(newPerson).then((returnedPerson) => {
