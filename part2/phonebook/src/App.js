@@ -50,19 +50,39 @@ const App = () => {
                 (person) => (person.name !== newName ? person : returnedPerson)
               )
             );
-            setMessage(`Updated ${returnedPerson.name}`);
+            setMessage({
+              text: `Updated ${returnedPerson.name}`,
+              type: 'success',
+            });
             setNewName('');
             setNewNumber('');
+          })
+          .catch((error) => {
+            setMessage({
+              text: `${newName} has already been removed from server`,
+              type: 'fail',
+            });
+            setPersons(
+              persons.filter((person) => person.id !== personToUpdate.id)
+            );
           });
       }
     } else {
       const newPerson = { name: newName, number: newNumber };
-      personService.create(newPerson).then((returnedPerson) => {
-        setPersons([...persons, returnedPerson]);
-        setMessage(`Added ${returnedPerson.name}`);
-        setNewName('');
-        setNewNumber('');
-      });
+      personService
+        .create(newPerson)
+        .then((returnedPerson) => {
+          setPersons([...persons, returnedPerson]);
+          setMessage({ text: `Added ${returnedPerson.name}`, type: 'success' });
+          setNewName('');
+          setNewNumber('');
+        })
+        .catch((error) => {
+          setMessage({
+            text: `An error occured when adding ${newName}...`,
+            type: 'fail',
+          });
+        });
     }
     setTimeout(() => {
       setMessage(null);
@@ -73,9 +93,22 @@ const App = () => {
     const result = window.confirm(`Delete ${name}?`);
 
     if (result) {
-      personService.remove(id).then(() => {
-        setPersons(persons.filter((person) => person.id !== id));
-      });
+      personService
+        .remove(id)
+        .then(() => {
+          setPersons(persons.filter((person) => person.id !== id));
+          setMessage({ text: `Deleted ${name}`, type: 'success' });
+        })
+        .catch((error) => {
+          setMessage({
+            text: `${newName} has already been removed from server`,
+            type: 'fail',
+          });
+          setPersons(persons.filter((person) => person.id !== id));
+        });
+      setTimeout(() => {
+        setMessage(null);
+      }, 3000);
     }
   };
 
