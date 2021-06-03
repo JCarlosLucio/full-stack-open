@@ -58,13 +58,11 @@ const App = () => {
             setNewNumber('');
           })
           .catch((error) => {
+            console.log(error.response.data.error);
             setMessage({
-              text: `${newName} has already been removed from server`,
+              text: `${error.response.data.error}`,
               type: 'fail',
             });
-            setPersons(
-              persons.filter((person) => person.id !== personToUpdate.id)
-            );
           });
       }
     } else {
@@ -78,8 +76,9 @@ const App = () => {
           setNewNumber('');
         })
         .catch((error) => {
+          console.log(error.response.data.error);
           setMessage({
-            text: `An error occured when adding ${newName}...`,
+            text: `${error.response.data.error}`,
             type: 'fail',
           });
         });
